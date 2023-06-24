@@ -55,6 +55,11 @@ func main() {
 		Price float32 `json:"price,omitempty"`
 	}
 
+	type UserSummary struct {
+		User       string  `json:"user"`
+		TotalPrice float32 `json:"total_price"`
+	}
+
 	// Create a slice to store the combined order and price information
 	ordersWithPrice := make([]OrderWithPrice, 0)
 
@@ -90,16 +95,32 @@ func main() {
 			ordersWithPrice = append(ordersWithPrice, orderWithPrice)
 		}
 	}
+	userSummaries := make(map[string]float32)
 
-	// Convert filledDrinkPrices slice to JSON string
-	jsonString, err := json.MarshalIndent(ordersWithPrice, "", "  ")
+	for _, order := range ordersWithPrice {
+		user := order.User
+		price := order.Price
+		userSummaries[user] += price
+	}
+
+	summarySlice := make([]UserSummary, 0)
+
+	for user, totalPrice := range userSummaries {
+		summary := UserSummary{
+			User:       user,
+			TotalPrice: totalPrice,
+		}
+		summarySlice = append(summarySlice, summary)
+	}
+
+	// Convert the summarySlice to JSON string
+	jsonString, err := json.MarshalIndent(summarySlice, "", "  ")
 	if err != nil {
-		fmt.Println("Failed to marshal ordersWithPrice to JSON:", err)
+		fmt.Println("Failed to marshal user summaries to JSON:", err)
 		return
 	}
 
 	// Print the JSON string to the console
-	fmt.Println("Filled DrinkPrices struct:")
+	fmt.Println("User summaries:")
 	fmt.Println(string(jsonString))
-
 }
