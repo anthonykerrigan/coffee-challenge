@@ -34,7 +34,10 @@ func main() {
 	drinkPricesMap := make(map[string]DrinkPrices)
 
 	for _, p := range prices {
-		drinkPricesMap[p.Drink] = p.Price
+		drinkPrices := p.Price
+		drinkPrices.Name = p.Drink
+		drinkPricesMap[p.Drink] = drinkPrices
+
 	}
 
 	// Create a map to track if we've already added the drink
@@ -47,6 +50,7 @@ func main() {
 		name := order.Drink
 
 		// Check if the drink has been added against our Map
+		// Add the drink if it hasn't been
 
 		if !addedDrinks[name] {
 			drinkPrices := drinkPricesMap[name]
@@ -55,17 +59,29 @@ func main() {
 
 			addedDrinks[name] = true
 
-			fmt.Println("Drink:", name)
-			//fmt.Println("Size:", size)
-			fmt.Println("Small:", drinkPrices.Small)
-			fmt.Println("Medium:", drinkPrices.Medium)
-			fmt.Println("Large:", drinkPrices.Large)
-			fmt.Println("Huge:", drinkPrices.Huge)
-			fmt.Println("Mega:", drinkPrices.Mega)
-			fmt.Println("Ultra:", drinkPrices.Ultra)
-			fmt.Println("-------------------")
+			/*
+				fmt.Println("Drink:", name)
+				//fmt.Println("Size:", size)
+				fmt.Println("Small:", drinkPrices.Small)
+				fmt.Println("Medium:", drinkPrices.Medium)
+				fmt.Println("Large:", drinkPrices.Large)
+				fmt.Println("Huge:", drinkPrices.Huge)
+				fmt.Println("Mega:", drinkPrices.Mega)
+				fmt.Println("Ultra:", drinkPrices.Ultra)
+				fmt.Println("-------------------")
+			*/
 		}
 
 	}
+	// Convert filledDrinkPrices slice to JSON string
+	jsonString, err := json.MarshalIndent(filledDrinkPrices, "", "  ")
+	if err != nil {
+		fmt.Println("Failed to marshal filledDrinkPrices to JSON:", err)
+		return
+	}
+
+	// Print the JSON string to the console
+	fmt.Println("Filled DrinkPrices struct:")
+	fmt.Println(string(jsonString))
 
 }
