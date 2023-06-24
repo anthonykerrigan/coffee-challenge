@@ -37,21 +37,35 @@ func main() {
 		drinkPricesMap[p.Drink] = p.Price
 	}
 
+	// Create a map to track if we've already added the drink
+	addedDrinks := make(map[string]bool)
+
+	// Create a slice to store the filled DrinkPrices structs
+	filledDrinkPrices := make([]DrinkPrices, 0)
+
 	for _, order := range orders {
 		name := order.Drink
-		size := order.Size
 
-		drinkPrices := drinkPricesMap[name]
+		// Check if the drink has been added against our Map
 
-		fmt.Println("Drink:", name)
-		fmt.Println("Size:", size)
-		fmt.Println("Small:", drinkPrices.Small)
-		fmt.Println("Medium:", drinkPrices.Medium)
-		fmt.Println("Large:", drinkPrices.Large)
-		fmt.Println("Huge:", drinkPrices.Huge)
-		fmt.Println("Mega:", drinkPrices.Mega)
-		fmt.Println("Ultra:", drinkPrices.Ultra)
-		fmt.Println("-------------------")
+		if !addedDrinks[name] {
+			drinkPrices := drinkPricesMap[name]
+
+			filledDrinkPrices = append(filledDrinkPrices, drinkPrices)
+
+			addedDrinks[name] = true
+
+			fmt.Println("Drink:", name)
+			//fmt.Println("Size:", size)
+			fmt.Println("Small:", drinkPrices.Small)
+			fmt.Println("Medium:", drinkPrices.Medium)
+			fmt.Println("Large:", drinkPrices.Large)
+			fmt.Println("Huge:", drinkPrices.Huge)
+			fmt.Println("Mega:", drinkPrices.Mega)
+			fmt.Println("Ultra:", drinkPrices.Ultra)
+			fmt.Println("-------------------")
+		}
+
 	}
 
 }
