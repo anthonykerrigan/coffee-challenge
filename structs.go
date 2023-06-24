@@ -6,7 +6,7 @@ type Prices struct {
 }
 
 type DrinkPrices struct {
-	Name   string  `json:"name"`
+	Drink  string  `json:"Drink"`
 	Small  float32 `json:"small,omitempty"`
 	Medium float32 `json:"medium,omitempty"`
 	Large  float32 `json:"large,omitempty"`
@@ -22,6 +22,6 @@ type Orders struct {
 }
 
 type Payments struct {
-	User   string `json:"user"`
-	Amount string `json:"amount"`
+	User   string  `json:"user"`
+	Amount float32 `json:"amount"`
 }

@@ -30,53 +30,71 @@ func main() {
 		panic(err)
 	}
 
+	paymentsFile, err := ioutil.ReadFile("./data/payments.json")
+	if err != nil {
+		panic(err)
+	}
+
+	var payments []Payments
+	err = json.Unmarshal(paymentsFile, &payments)
+	if err != nil {
+		panic(err)
+	}
 	// Create the map for the DrinkPrices Struct
 	drinkPricesMap := make(map[string]DrinkPrices)
 
 	for _, p := range prices {
 		drinkPrices := p.Price
-		drinkPrices.Name = p.Drink
+		drinkPrices.Drink = p.Drink
 		drinkPricesMap[p.Drink] = drinkPrices
 
 	}
 
-	// Create a map to track if we've already added the drink
-	addedDrinks := make(map[string]bool)
-
-	// Create a slice to store the filled DrinkPrices structs
-	filledDrinkPrices := make([]DrinkPrices, 0)
-
-	for _, order := range orders {
-		name := order.Drink
-
-		// Check if the drink has been added against our Map
-		// Add the drink if it hasn't been
-
-		if !addedDrinks[name] {
-			drinkPrices := drinkPricesMap[name]
-
-			filledDrinkPrices = append(filledDrinkPrices, drinkPrices)
-
-			addedDrinks[name] = true
-
-			/*
-				fmt.Println("Drink:", name)
-				//fmt.Println("Size:", size)
-				fmt.Println("Small:", drinkPrices.Small)
-				fmt.Println("Medium:", drinkPrices.Medium)
-				fmt.Println("Large:", drinkPrices.Large)
-				fmt.Println("Huge:", drinkPrices.Huge)
-				fmt.Println("Mega:", drinkPrices.Mega)
-				fmt.Println("Ultra:", drinkPrices.Ultra)
-				fmt.Println("-------------------")
-			*/
-		}
-
+	type OrderWithPrice struct {
+		Orders
+		Price float32 `json:"price,omitempty"`
 	}
+
+	// Create a slice to store the combined order and price information
+	ordersWithPrice := make([]OrderWithPrice, 0)
+
+	// Fill OrderWithPrice struct for each order
+	for _, order := range orders {
+		drinkName := order.Drink
+		size := order.Size
+
+		// Check if the drink exists in the drinkPricesMap
+		if drinkPrices, ok := drinkPricesMap[drinkName]; ok {
+			// Check if the size exists in the drinkPrices struct
+			var price float32
+			switch size {
+			case "small":
+				price = drinkPrices.Small
+			case "medium":
+				price = drinkPrices.Medium
+			case "large":
+				price = drinkPrices.Large
+			case "huge":
+				price = drinkPrices.Huge
+			case "mega":
+				price = drinkPrices.Mega
+			case "ultra":
+				price = drinkPrices.Ultra
+			}
+
+			// Create the OrderWithPrice struct and append it to the slice
+			orderWithPrice := OrderWithPrice{
+				Orders: order,
+				Price:  price,
+			}
+			ordersWithPrice = append(ordersWithPrice, orderWithPrice)
+		}
+	}
+
 	// Convert filledDrinkPrices slice to JSON string
-	jsonString, err := json.MarshalIndent(filledDrinkPrices, "", "  ")
+	jsonString, err := json.MarshalIndent(ordersWithPrice, "", "  ")
 	if err != nil {
-		fmt.Println("Failed to marshal filledDrinkPrices to JSON:", err)
+		fmt.Println("Failed to marshal ordersWithPrice to JSON:", err)
 		return
 	}
 
