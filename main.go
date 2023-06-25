@@ -56,8 +56,10 @@ func main() {
 	}
 
 	type UserSummary struct {
-		User       string  `json:"user"`
-		TotalPrice float32 `json:"total_price"`
+		User         string  `json:"user"`
+		OrderTotal   float32 `json:"order_total"`
+		PaymentTotal float32 `json:"payment_total, omitempty"`
+		Balance      float32 `json:"balance, omitempty"`
 	}
 
 	// Create a slice to store the combined order and price information
@@ -105,12 +107,23 @@ func main() {
 
 	summarySlice := make([]UserSummary, 0)
 
-	for user, totalPrice := range userSummaries {
+	for user, OrderTotal := range userSummaries {
 		summary := UserSummary{
-			User:       user,
-			TotalPrice: totalPrice,
+			User:         user,
+			OrderTotal:   OrderTotal,
+			PaymentTotal: 0,
+			Balance:      0,
 		}
 		summarySlice = append(summarySlice, summary)
+	}
+
+	for i := range summarySlice {
+		for _, payment := range payments {
+			if summarySlice[i].User == payment.User {
+				summarySlice[i].PaymentTotal += payment.Amount
+			}
+		}
+		summarySlice[i].Balance = summarySlice[i].OrderTotal - summarySlice[i].PaymentTotal
 	}
 
 	// Convert the summarySlice to JSON string
@@ -123,4 +136,7 @@ func main() {
 	// Print the JSON string to the console
 	fmt.Println("User summaries:")
 	fmt.Println(string(jsonString))
+	fmt.Println("-------------------------------------------------------")
+	fmt.Println("Payments File")
+	fmt.Println(payments)
 }
