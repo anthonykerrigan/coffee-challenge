@@ -8,6 +8,10 @@ import (
 
 func main() {
 
+	//Import all of the JSON files and create the Variables for them.
+	//See Structs.go for the sctruct definitions.
+
+	//Prices
 	pricesFile, err := ioutil.ReadFile("./data/prices.json")
 	if err != nil {
 		panic(err)
@@ -19,6 +23,7 @@ func main() {
 		panic(err)
 	}
 
+	//Orders
 	ordersFile, err := ioutil.ReadFile("./data/orders.json")
 	if err != nil {
 		panic(err)
@@ -30,6 +35,7 @@ func main() {
 		panic(err)
 	}
 
+	//Payments
 	paymentsFile, err := ioutil.ReadFile("./data/payments.json")
 	if err != nil {
 		panic(err)
@@ -50,6 +56,8 @@ func main() {
 
 	}
 
+	// Create two new structs to temporarily hold Data we need for summarisation
+	// Use 'omitempty' to ensure unnecessary values aren't stored
 	type OrderWithPrice struct {
 		Orders
 		Price float32 `json:"price,omitempty"`
@@ -58,8 +66,8 @@ func main() {
 	type UserSummary struct {
 		User         string  `json:"user"`
 		OrderTotal   float32 `json:"order_total"`
-		PaymentTotal float32 `json:"payment_total, omitempty"`
-		Balance      float32 `json:"balance, omitempty"`
+		PaymentTotal float32 `json:"payment_total,omitempty"`
+		Balance      float32 `json:"balance,omitempty"`
 	}
 
 	// Create a slice to store the combined order and price information
@@ -97,6 +105,7 @@ func main() {
 			ordersWithPrice = append(ordersWithPrice, orderWithPrice)
 		}
 	}
+	// Create a summary Map for all users
 	userSummaries := make(map[string]float32)
 
 	for _, order := range ordersWithPrice {
@@ -117,6 +126,8 @@ func main() {
 		summarySlice = append(summarySlice, summary)
 	}
 
+	// Using the order total calculated above, pull the Payment data in
+	// Summarise per user and then subtract the payments from the order totals leaving the balance
 	for i := range summarySlice {
 		for _, payment := range payments {
 			if summarySlice[i].User == payment.User {
@@ -136,7 +147,4 @@ func main() {
 	// Print the JSON string to the console
 	fmt.Println("User summaries:")
 	fmt.Println(string(jsonString))
-	fmt.Println("-------------------------------------------------------")
-	fmt.Println("Payments File")
-	fmt.Println(payments)
 }

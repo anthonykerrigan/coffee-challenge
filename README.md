@@ -1,3 +1,13 @@
+# Running the challenge
+  To run the challenge and obtain the output, 
+  1. Download and extract the the tar.gz file
+      Alternatively run git clone https://github.com/elizakerrigan/coffee-challenge.git 
+  3. open this newly created/extracted folder inside a Terminal
+  4. Run coffee.exe from that terminal window. The output should be displayed
+
+
+
+The Task: 
 # Coffee challenge
 
 This task it to build an app to fetch and parse some data associated with a coffee shop.
